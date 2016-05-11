@@ -18,14 +18,16 @@
 
 /* 进行替换时，可使用同步相关方法 */
 
-static char* cSNSQLitePoolManager;
+#define Default_DataBase_Path @""
+
+static char* cMXSQLitePoolManager;
 
 static dispatch_queue_t sn_default_queue() {
     static dispatch_once_t onceToken;
     static dispatch_queue_t q;
     dispatch_once(&onceToken, ^{
-        q = dispatch_queue_create(cSNSQLitePoolManager, DISPATCH_QUEUE_SERIAL);
-        dispatch_queue_set_specific(q, cSNSQLitePoolManager, (__bridge void *)(q), NULL);
+        q = dispatch_queue_create(cMXSQLitePoolManager, DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_set_specific(q, cMXSQLitePoolManager, (__bridge void *)(q), NULL);
     });
     return q;
 }

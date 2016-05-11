@@ -10,15 +10,15 @@
 #import "libkern/OSAtomic.h"
 
 static MXDataBasePoolManager *_manager = nil;
-static char* cSNSQLitePoolManager = "SNSQLitePoolManager";
+static char* cMXSQLitePoolManager = "MXSQLitePoolManager";
 static OSSpinLock lock = OS_SPINLOCK_INIT;
 
 #define check_default_queue \
-char* v = dispatch_get_specific(cSNSQLitePoolManager); \
+char* v = dispatch_get_specific(cMXSQLitePoolManager); \
 NSAssert(v != cSNSQLitePoolManager, @"can't call this method below 'sn_default_queue()'"); \
 
 BOOL is_valid_queue(dispatch_queue_t q) {
-    dispatch_queue_t Q = (__bridge dispatch_queue_t)(dispatch_get_specific(cSNSQLitePoolManager));
+    dispatch_queue_t Q = (__bridge dispatch_queue_t)(dispatch_get_specific(cMXSQLitePoolManager));
     return Q != q;
 }
 
@@ -62,7 +62,7 @@ void safe_dispatch_sync(dispatch_queue_t q, dispatch_block_t block) {
     if (!db) {
         db = [FMDatabase databaseWithPath:dbPath];
         dispatch_queue_t q = dispatch_queue_create([dbPath cStringUsingEncoding:NSUTF8StringEncoding], DISPATCH_QUEUE_SERIAL);
-        dispatch_queue_set_specific(q, cSNSQLitePoolManager, (__bridge void *)(q), NULL);
+        dispatch_queue_set_specific(q, cMXSQLitePoolManager, (__bridge void *)(q), NULL);
         [_dbDic setValue:db forKey:dbPath];
         [_qDic setValue:q forKey:dbPath];
         [db open];
@@ -76,29 +76,12 @@ void safe_dispatch_sync(dispatch_queue_t q, dispatch_block_t block) {
 }
 
 + (NSString *)generateDBPath:(NSString *)db {
-    NSString *result = nil;
-    NSArray * names = [db componentsSeparatedByString:@"."];
-    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:[names objectAtIndexSafely:0]
-                                                            ofType:[names objectAtIndexSafely:1]];
-    
-    NSFileManager * fileManager = [NSFileManager defaultManager];
-    NSString * fullPath = [[CoreSinaNews sharedCore].userPath stringByAppendingPathComponent:db];
-    result = fullPath;
-    
-    if (![fileManager fileExistsAtPath:fullPath])
-    {
-        NSError *error;
-        if (![fileManager copyItemAtPath:bundlePath
-                                  toPath:fullPath
-                                   error:&error])
-            NSAssert(NO, error.description);
-    }
-    return result;
+    return db;
 }
 
 - (NSString *)defaultDataPath {
     if (!_dbFullPath) {
-        _dbFullPath = [MXDataBasePoolManager generateDBPath:SinaNewsDataBase_Name];
+        _dbFullPath = [MXDataBasePoolManager generateDBPath:Default_DataBase_Path];
     }
     return _dbFullPath;
 }
