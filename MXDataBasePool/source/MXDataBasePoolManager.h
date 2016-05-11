@@ -22,15 +22,15 @@
 
 static char* cMXSQLitePoolManager;
 
-static dispatch_queue_t sn_default_queue() {
-    static dispatch_once_t onceToken;
-    static dispatch_queue_t q;
-    dispatch_once(&onceToken, ^{
-        q = dispatch_queue_create(cMXSQLitePoolManager, DISPATCH_QUEUE_SERIAL);
-        dispatch_queue_set_specific(q, cMXSQLitePoolManager, (__bridge void *)(q), NULL);
-    });
-    return q;
-}
+//static dispatch_queue_t sn_default_queue() {
+//    static dispatch_once_t onceToken;
+//    static dispatch_queue_t q;
+//    dispatch_once(&onceToken, ^{
+//        q = dispatch_queue_create(cMXSQLitePoolManager, DISPATCH_QUEUE_SERIAL);
+//        dispatch_queue_set_specific(q, cMXSQLitePoolManager, (__bridge void *)(q), NULL);
+//    });
+//    return q;
+//}
 
 @interface MXDataBasePoolManager : NSObject
 
