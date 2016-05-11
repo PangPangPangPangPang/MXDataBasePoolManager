@@ -18,19 +18,9 @@
 
 /* 进行替换时，可使用同步相关方法 */
 
-#define Default_DataBase_Path @""
+#define Default_DataBase_Path @"MX_Default_DataBase_Path.sqlite"
 
 static char* cMXSQLitePoolManager;
-
-//static dispatch_queue_t sn_default_queue() {
-//    static dispatch_once_t onceToken;
-//    static dispatch_queue_t q;
-//    dispatch_once(&onceToken, ^{
-//        q = dispatch_queue_create(cMXSQLitePoolManager, DISPATCH_QUEUE_SERIAL);
-//        dispatch_queue_set_specific(q, cMXSQLitePoolManager, (__bridge void *)(q), NULL);
-//    });
-//    return q;
-//}
 
 @interface MXDataBasePoolManager : NSObject
 
@@ -38,6 +28,7 @@ static char* cMXSQLitePoolManager;
 + (NSString *)generateDBPath:(NSString *)db;
 - (FMDatabase *)defaultDataBase;
 - (NSString *)defaultDataPath;
++ (void)setDefaultPath:(NSString *)dbPath;
 
 - (FMDatabase *)getDataBase:(NSString *)dbPath;
 - (BOOL)closeDataBase:(NSString *)dbPath;

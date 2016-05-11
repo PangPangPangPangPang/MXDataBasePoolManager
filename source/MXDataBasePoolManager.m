@@ -12,6 +12,7 @@
 static MXDataBasePoolManager *_manager = nil;
 static char* cMXSQLitePoolManager = "MXSQLitePoolManager";
 static OSSpinLock lock = OS_SPINLOCK_INIT;
+static NSString *sMXDefaultDataBasePath = nil;
 
 #define check_default_queue \
 char* v = dispatch_get_specific(cMXSQLitePoolManager); \
@@ -71,17 +72,28 @@ void safe_dispatch_sync(dispatch_queue_t q, dispatch_block_t block) {
     return db;
 }
 
++ (void)setDefaultPath:(NSString *)dbPath {
+    sMXDefaultDataBasePath = dbPath;
+}
+
 - (FMDatabase *)defaultDataBase {
     return [self getDataBase:[self defaultDataPath]];
 }
 
 + (NSString *)generateDBPath:(NSString *)db {
-    return db;
+    NSArray * names = [db componentsSeparatedByString:@"."];
+    NSAssert(names.count == 2, @"'db' must use the form like 'Example.sqlite'");
+    
+    NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString * documentsDirectory = [paths objectAtIndex:0];
+    NSString *path  = [documentsDirectory stringByAppendingPathComponent:db];
+    return path;
 }
 
 - (NSString *)defaultDataPath {
     if (!_dbFullPath) {
-        _dbFullPath = [MXDataBasePoolManager generateDBPath:Default_DataBase_Path];
+        NSString *path = sMXDefaultDataBasePath == nil ? Default_DataBase_Path : sMXDefaultDataBasePath;
+        _dbFullPath = [MXDataBasePoolManager generateDBPath:path];
     }
     return _dbFullPath;
 }

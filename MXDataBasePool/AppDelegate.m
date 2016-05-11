@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "MXDataBasePoolManager.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +18,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [MXDataBasePoolManager setDefaultPath:@"MX_Example.sqlite"];
+    NSString *sql = @"CREATE TABLE IF NOT EXISTS SN_Likes ( articleId CHAR, ZTimeStamp TIMESTAMP, AbstractPlist BLOB, url CHAR )";
+    [[MXDataBasePoolManager shareInstance] sync_excuteUpdate:sql];
+    
     return YES;
 }
 
